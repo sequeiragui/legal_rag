@@ -38,6 +38,13 @@ def index_document(pdf_path: str, collection_name: str = "documents") -> int:
         )
     return len(chunks)
 
+def delete_document(filename: str, collection_name: str = "documents"):
+    collection = chroma_client.get_or_create_collection(collection_name)
+    all_ids = collection.get()["ids"]
+    matching = [id for id in all_ids if id.startswith(filename + "_chunk_")]
+    if matching:
+        collection.delete(ids=matching)
+
 def query_rag(question: str, collection_name: str = "documents") -> str:
     collection = chroma_client.get_collection(collection_name)
     question_embedding = embedding_model.encode(question).tolist()

@@ -3,268 +3,514 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DocQuery</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>guilherme sequeira</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #F7F7F5;
-    --surface: #FFFFFF;
-    --border: #E8E8E4;
-    --border-hover: #D0D0C8;
-    --text: #1A1A18;
-    --text-muted: #888884;
-    --text-hint: #B8B8B4;
-    --accent-bg: #1A1A18;
-    --accent-text: #FFFFFF;
-    --blue: #2563EB;
-    --blue-bg: #EFF6FF;
-    --radius: 10px;
-    --radius-sm: 6px;
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #09090B;
+    color: #A1A1AA;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
   }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; height: 100vh; overflow: hidden; }
 
-  /* SIDEBAR */
-  .sidebar { width: 260px; height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-  .sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
-  .logo { font-size: 15px; font-weight: 500; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
-  .logo-dot { width: 8px; height: 8px; background: var(--accent-bg); border-radius: 50%; }
-  .sidebar-label { font-size: 11px; font-weight: 500; color: var(--text-hint); letter-spacing: 0.5px; text-transform: uppercase; padding: 16px 20px 8px; }
-  .doc-list { padding: 0 12px; flex: 1; overflow-y: auto; }
-  .doc-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
-  .doc-item:hover { background: var(--bg); }
-  .doc-icon { width: 28px; height: 28px; border-radius: 6px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
-  .doc-name { font-size: 13px; color: var(--text); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .doc-size { font-size: 11px; color: var(--text-hint); white-space: nowrap; }
-  .doc-empty { font-size: 13px; color: var(--text-hint); padding: 12px 10px; }
+  ::selection { background: rgba(161,161,170,0.15); }
 
-  .upload-wrapper { padding: 12px; }
-  .upload-area { border: 1.5px dashed var(--border-hover); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; }
-  .upload-area:hover { border-color: var(--text-muted); background: var(--bg); }
-  .upload-area.dragover { border-color: var(--blue); background: var(--blue-bg); }
-  .upload-icon { font-size: 20px; margin-bottom: 6px; color: var(--text-muted); }
-  .upload-text { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-  .upload-text strong { color: var(--text); font-weight: 500; }
-  #file-input { display: none; }
+  /* --- grain overlay --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 100;
+  }
 
-  /* MAIN */
-  .main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-  .topbar { padding: 14px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface); flex-shrink: 0; }
-  .topbar-title { font-size: 14px; font-weight: 500; }
-  .topbar-meta { font-size: 12px; color: var(--text-hint); display: flex; align-items: center; gap: 6px; }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; }
-  .status-dot.inactive { background: var(--border-hover); }
+  /* --- ambient glow --- */
+  .glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 {
+    top: -200px;
+    right: -100px;
+    background: #3B82F6;
+    animation: drift1 20s ease-in-out infinite;
+  }
+  .glow-2 {
+    bottom: -200px;
+    left: -100px;
+    background: #8B5CF6;
+    animation: drift2 25s ease-in-out infinite;
+  }
 
-  .chat-area { flex: 1; overflow-y: auto; padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+  @keyframes drift1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-80px, 60px); }
+  }
+  @keyframes drift2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(60px, -80px); }
+  }
 
-  /* EMPTY STATE */
-  .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--text-hint); text-align: center; padding: 40px; }
-  .empty-title { font-size: 15px; font-weight: 500; color: var(--text-muted); }
-  .empty-sub { font-size: 13px; line-height: 1.5; max-width: 300px; }
-  .suggestion-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
-  .suggestion { font-size: 12px; color: var(--text-muted); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; cursor: pointer; transition: all 0.15s; }
-  .suggestion:hover { border-color: var(--text-muted); color: var(--text); }
+  /* --- layout --- */
+  .page {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 100px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
 
-  /* MESSAGES */
-  .message { display: flex; gap: 12px; max-width: 720px; animation: fadein 0.2s ease; }
-  .message.user { flex-direction: row-reverse; align-self: flex-end; }
-  @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-  .avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; }
-  .avatar.ai { background: var(--accent-bg); color: var(--accent-text); }
-  .avatar.user { background: var(--border); color: var(--text-muted); }
-  .bubble { padding: 11px 15px; border-radius: 12px; font-size: 14px; line-height: 1.65; max-width: 560px; }
-  .bubble.ai { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 4px 12px 12px 12px; }
-  .bubble.user { background: var(--accent-bg); color: var(--accent-text); border-radius: 12px 4px 12px 12px; }
-  .bubble.thinking { color: var(--text-hint); font-style: italic; }
-  .source-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-  .chip { font-size: 11px; color: var(--blue); background: var(--blue-bg); padding: 3px 8px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+  /* --- stagger fade in --- */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease forwards;
+  }
+  .fade-up:nth-child(1) { animation-delay: 0.1s; }
+  .fade-up:nth-child(2) { animation-delay: 0.25s; }
+  .fade-up:nth-child(3) { animation-delay: 0.4s; }
+  .fade-up:nth-child(4) { animation-delay: 0.55s; }
+  .fade-up:nth-child(5) { animation-delay: 0.7s; }
 
-  /* UPLOADING TOAST */
-  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: var(--accent-bg); color: var(--accent-text); font-size: 13px; padding: 8px 16px; border-radius: 20px; display: none; z-index: 100; }
-  .toast.show { display: block; animation: fadein 0.2s ease; }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-  /* INPUT */
-  .input-area { padding: 12px 28px 20px; flex-shrink: 0; }
-  .input-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: flex-end; gap: 8px; padding: 10px 12px; transition: border-color 0.15s; max-width: 720px; }
-  .input-box:focus-within { border-color: var(--border-hover); }
-  textarea { flex: 1; border: none; outline: none; resize: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); line-height: 1.5; max-height: 120px; min-height: 24px; }
-  textarea::placeholder { color: var(--text-hint); }
-  .send-btn { width: 32px; height: 32px; border-radius: 8px; background: var(--accent-bg); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.15s; }
-  .send-btn:hover { opacity: 0.75; }
-  .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .send-btn svg { width: 14px; height: 14px; fill: white; }
+  /* --- header --- */
+  .header {
+    margin-bottom: 48px;
+  }
+
+  .name {
+    font-size: 28px;
+    font-weight: 600;
+    color: #FAFAFA;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #52525B;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .role::before {
+    content: '>';
+    color: #4ADE80;
+    font-weight: 500;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 16px;
+    background: #4ADE80;
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* --- bio --- */
+  .bio {
+    margin-bottom: 56px;
+    max-width: 460px;
+  }
+
+  .bio p {
+    color: #71717A;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* --- section --- */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: #3F3F46;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* --- project card --- */
+  .project {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 28px;
+    border: 1px solid #18181B;
+    border-radius: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 56px;
+    background: #0F0F12;
+  }
+
+  .project:hover {
+    border-color: #27272A;
+  }
+
+  .project-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .project-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #FAFAFA;
+    letter-spacing: -0.3px;
+  }
+
+  .project-badge {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .project-live {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: #4ADE80;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .project-live::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ADE80;
+    box-shadow: 0 0 8px rgba(74,222,128,0.4);
+    animation: livepulse 2s ease-in-out infinite;
+  }
+
+  @keyframes livepulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(74,222,128,0.4); }
+    50% { opacity: 0.5; box-shadow: 0 0 16px rgba(74,222,128,0.1); }
+  }
+
+  .project-arrow {
+    color: #3F3F46;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+  }
+
+  .project:hover .project-arrow { color: #71717A; transform: translate(2px, -2px); }
+
+  .project-arrow svg { width: 16px; height: 16px; }
+
+  .project-desc {
+    font-size: 13px;
+    color: #71717A;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  /* --- mini preview --- */
+  .project-preview {
+    background: #18181B;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #1E1E22;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .preview-bar {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+  .preview-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #27272A;
+  }
+
+  .preview-layout {
+    display: flex;
+    gap: 10px;
+    height: 60px;
+  }
+
+  .preview-sidebar {
+    width: 40px;
+    background: #1E1E22;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .preview-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .preview-line {
+    height: 6px;
+    border-radius: 3px;
+    background: #1E1E22;
+    transition: background 0.3s;
+  }
+  .preview-line:nth-child(1) { width: 70%; }
+  .preview-line:nth-child(2) { width: 50%; }
+  .preview-line:nth-child(3) { width: 85%; }
+
+  .preview-chat {
+    margin-top: auto;
+    height: 14px;
+    border-radius: 4px;
+    background: #1E1E22;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-chat::after {
+    content: '';
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(74,222,128,0.08), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+
+  /* --- tags --- */
+  .project-stack {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #52525B;
+    padding: 4px 10px;
+    border: 1px solid #1E1E22;
+    border-radius: 6px;
+    transition: all 0.3s;
+  }
+
+  .project:hover .tag { border-color: #27272A; }
+
+  /* --- links --- */
+  .links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .links a {
+    font-size: 13px;
+    color: #3F3F46;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .links a:hover { color: #A1A1AA; }
+
+  .links a svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* --- status bar --- */
+  .status {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #27272A;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1;
+    border-top: 1px solid #111114;
+    background: #09090B;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4ADE80;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 60px 20px 80px; }
+    .name { font-size: 24px; }
+    .status { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="sidebar-header">
-    <div class="logo">
-      <div class="logo-dot"></div>
-      DocQuery
-    </div>
-  </div>
-  <div class="sidebar-label">Documents</div>
-  <div class="doc-list" id="doc-list">
-    <div class="doc-empty">No documents yet</div>
-  </div>
-  <div class="upload-wrapper">
-    <div class="upload-area" id="upload-area">
-      <div class="upload-icon">↑</div>
-      <div class="upload-text"><strong>Upload PDF</strong><br>drag & drop or click</div>
-      <input type="file" id="file-input" accept=".pdf" multiple>
-    </div>
-  </div>
-</div>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
 
-<div class="main">
-  <div class="topbar">
-    <div class="topbar-title" id="topbar-title">DocQuery</div>
-    <div class="topbar-meta">
-      <div class="status-dot inactive" id="status-dot"></div>
-      <span id="status-text">No documents indexed</span>
+<div class="page">
+
+  <div class="header fade-up">
+    <div class="name">guilherme sequeira</div>
+    <div class="role">
+      <span id="typed"></span><span class="cursor"></span>
     </div>
   </div>
 
-  <div class="chat-area" id="chat-area">
-    <div class="empty-state" id="empty-state">
-      <div class="empty-title">Ask your documents anything</div>
-      <div class="empty-sub">Upload a PDF to get started, then ask questions about its contents.</div>
-      <div class="suggestion-grid">
-        <div class="suggestion" onclick="fillSuggestion(this)">What are the key terms?</div>
-        <div class="suggestion" onclick="fillSuggestion(this)">Summarize this document</div>
-        <div class="suggestion" onclick="fillSuggestion(this)">What are the termination clauses?</div>
-        <div class="suggestion" onclick="fillSuggestion(this)">List all obligations</div>
+  <div class="bio fade-up">
+    <p>software engineer building tools with AI. interested in search, NLP, and things that ship fast.</p>
+  </div>
+
+  <div class="fade-up">
+    <div class="section-label">projects</div>
+
+    <a href="/folio" class="project" id="project-folio">
+      <div class="project-top">
+        <span class="project-name">folio</span>
+        <div class="project-badge">
+          <span class="project-live">live</span>
+          <span class="project-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+        </div>
       </div>
+      <div class="project-desc">upload documents and ask questions in plain english. semantic search powered by claude.</div>
+
+      <div class="project-preview">
+        <div class="preview-bar">
+          <div class="preview-dot"></div>
+          <div class="preview-dot"></div>
+          <div class="preview-dot"></div>
+        </div>
+        <div class="preview-layout">
+          <div class="preview-sidebar"></div>
+          <div class="preview-main">
+            <div class="preview-line"></div>
+            <div class="preview-line"></div>
+            <div class="preview-line"></div>
+            <div class="preview-chat"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-stack">
+        <span class="tag">python</span>
+        <span class="tag">fastapi</span>
+        <span class="tag">claude</span>
+        <span class="tag">chromadb</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="fade-up">
+    <div class="section-label">links</div>
+    <div class="links">
+      <a href="https://github.com/sequeiragui" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        github
+      </a>
+      <a href="https://www.linkedin.com/in/guilhermesequeira05/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        linkedin
+      </a>
+      <a href="mailto:hello@guilhermesequeira.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        email
+      </a>
     </div>
   </div>
 
-  <div class="input-area">
-    <div class="input-box">
-      <textarea id="query-input" placeholder="Ask a question about your documents..." rows="1"
-        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendQuery()">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-      </button>
-    </div>
+  <div class="fade-up" style="animation-delay: 0.85s;">
   </div>
+
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="status">
+  <span><span class="status-dot"></span>all systems online</span>
+  <span>lisbon, pt</span>
+</div>
 
 <script>
-  const API = '';
-  let docCount = 0;
+  // typing effect
+  const phrases = [
+    'building tools with AI',
+    'shipping fast, iterating faster',
+    'search + NLP + good design',
+    'making complex things simple'
+  ];
+  let phraseIdx = 0, charIdx = 0, deleting = false;
+  const typedEl = document.getElementById('typed');
+  const typeSpeed = 60, deleteSpeed = 30, pauseEnd = 2000, pauseStart = 500;
 
-  // Upload area
-  const uploadArea = document.getElementById('upload-area');
-  const fileInput = document.getElementById('file-input');
-
-  uploadArea.addEventListener('click', () => fileInput.click());
-  uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-  uploadArea.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    [...e.dataTransfer.files].forEach(uploadFile);
-  });
-  fileInput.addEventListener('change', () => [...fileInput.files].forEach(uploadFile));
-
-  async function uploadFile(file) {
-    if (!file.name.endsWith('.pdf')) return showToast('Only PDF files are supported');
-    showToast(`Uploading ${file.name}...`);
-    const form = new FormData();
-    form.append('file', file);
-    try {
-      const res = await fetch(`${API}/upload`, { method: 'POST', body: form });
-      const data = await res.json();
-      docCount++;
-      addDocToSidebar(file.name, file.size);
-      updateStatus();
-      showToast(`Indexed ${file.name} — ${data.chunks} chunks`);
-    } catch (e) {
-      showToast('Upload failed. Is the server running?');
+  function type() {
+    const current = phrases[phraseIdx];
+    if (!deleting) {
+      typedEl.textContent = current.substring(0, charIdx + 1);
+      charIdx++;
+      if (charIdx === current.length) {
+        setTimeout(() => { deleting = true; type(); }, pauseEnd);
+        return;
+      }
+      setTimeout(type, typeSpeed);
+    } else {
+      typedEl.textContent = current.substring(0, charIdx - 1);
+      charIdx--;
+      if (charIdx === 0) {
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+        setTimeout(type, pauseStart);
+        return;
+      }
+      setTimeout(type, deleteSpeed);
     }
   }
-
-  function addDocToSidebar(name, size) {
-    const list = document.getElementById('doc-list');
-    const empty = list.querySelector('.doc-empty');
-    if (empty) empty.remove();
-    const kb = Math.round(size / 1024);
-    const item = document.createElement('div');
-    item.className = 'doc-item';
-    item.innerHTML = `<div class="doc-icon">PDF</div><span class="doc-name">${name}</span><span class="doc-size">${kb}k</span>`;
-    list.appendChild(item);
-  }
-
-  function updateStatus() {
-    document.getElementById('status-dot').className = 'status-dot';
-    document.getElementById('status-text').textContent = `${docCount} document${docCount !== 1 ? 's' : ''} indexed`;
-  }
-
-  // Chat
-  async function sendQuery() {
-    const input = document.getElementById('query-input');
-    const question = input.value.trim();
-    if (!question) return;
-    if (docCount === 0) return showToast('Upload a document first');
-
-    document.getElementById('empty-state')?.remove();
-    appendMessage('user', question);
-    input.value = '';
-    autoResize(input);
-
-    const thinkingId = appendMessage('ai', 'Searching documents...', true);
-    document.getElementById('send-btn').disabled = true;
-
-    try {
-      const res = await fetch(`${API}/query?question=${encodeURIComponent(question)}`, { method: 'POST' });
-      const data = await res.json();
-      document.getElementById(thinkingId)?.remove();
-      appendMessage('ai', data.answer);
-    } catch (e) {
-      document.getElementById(thinkingId)?.remove();
-      appendMessage('ai', 'Something went wrong. Please try again.');
-    }
-    document.getElementById('send-btn').disabled = false;
-  }
-
-  function appendMessage(role, text, thinking = false) {
-    const area = document.getElementById('chat-area');
-    const id = 'msg-' + Date.now();
-    const div = document.createElement('div');
-    div.className = `message ${role}`;
-    div.id = id;
-    div.innerHTML = `
-      <div class="avatar ${role}">${role === 'ai' ? 'AI' : 'G'}</div>
-      <div class="bubble ${role}${thinking ? ' thinking' : ''}">${text}</div>
-    `;
-    area.appendChild(div);
-    area.scrollTop = area.scrollHeight;
-    return id;
-  }
-
-  function fillSuggestion(el) {
-    document.getElementById('query-input').value = el.textContent;
-    document.getElementById('query-input').focus();
-  }
-
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuery(); }
-  }
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
+  setTimeout(type, 800);
 </script>
+
 </body>
 </html>
