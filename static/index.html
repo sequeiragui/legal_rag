@@ -4,145 +4,168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>guilherme sequeira</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Inter', -apple-system, sans-serif;
-    background: #09090B;
+    background: #0B0B0F;
     color: #A1A1AA;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.7;
     overflow-x: hidden;
   }
 
   ::selection { background: rgba(161,161,170,0.15); }
 
-  /* --- grain overlay --- */
+  /* --- background canvas --- */
+  canvas#bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* --- grain --- */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.03;
+    opacity: 0.025;
     pointer-events: none;
-    z-index: 100;
-  }
-
-  /* --- ambient glow --- */
-  .glow {
-    position: fixed;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.07;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .glow-1 {
-    top: -200px;
-    right: -100px;
-    background: #3B82F6;
-    animation: drift1 20s ease-in-out infinite;
-  }
-  .glow-2 {
-    bottom: -200px;
-    left: -100px;
-    background: #8B5CF6;
-    animation: drift2 25s ease-in-out infinite;
-  }
-
-  @keyframes drift1 {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(-80px, 60px); }
-  }
-  @keyframes drift2 {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(60px, -80px); }
-  }
-
-  /* --- layout --- */
-  .page {
-    max-width: 580px;
-    margin: 0 auto;
-    padding: 100px 24px 80px;
-    position: relative;
     z-index: 1;
   }
 
-  /* --- stagger fade in --- */
-  .fade-up {
+  /* --- two-column layout --- */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 64px 100px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 80px;
+  }
+
+  /* --- left column (profile) --- */
+  .left {
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+    padding-right: 48px;
+    border-right: 1px solid #1A1A1F;
+  }
+
+  /* --- right column (projects) --- */
+  .right {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* --- scroll reveal --- */
+  .reveal {
     opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 0.8s ease forwards;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
   }
-  .fade-up:nth-child(1) { animation-delay: 0.1s; }
-  .fade-up:nth-child(2) { animation-delay: 0.25s; }
-  .fade-up:nth-child(3) { animation-delay: 0.4s; }
-  .fade-up:nth-child(4) { animation-delay: 0.55s; }
-  .fade-up:nth-child(5) { animation-delay: 0.7s; }
-
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  /* --- header --- */
-  .header {
-    margin-bottom: 48px;
+  /* --- profile --- */
+  .greeting {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #4ADE80;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
   }
 
   .name {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 600;
     color: #FAFAFA;
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
+    letter-spacing: -1.2px;
+    line-height: 1.1;
+    margin-bottom: 24px;
   }
 
-  .role {
+  .name span {
+    background: linear-gradient(135deg, #FAFAFA 0%, #71717A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: #71717A;
+    line-height: 1.8;
+    margin-bottom: 32px;
+  }
+
+  #terminal {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     color: #52525B;
+    margin-bottom: 48px;
+    line-height: 2;
+  }
+
+  .term-line {
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  .role::before {
-    content: '>';
+  .term-prompt {
     color: #4ADE80;
-    font-weight: 500;
+    flex-shrink: 0;
   }
 
-  .cursor {
+  .term-text {
+    color: #71717A;
+  }
+
+  .term-cursor {
     display: inline-block;
     width: 7px;
-    height: 16px;
+    height: 14px;
     background: #4ADE80;
     margin-left: 2px;
     animation: blink 1s step-end infinite;
     vertical-align: middle;
+    border-radius: 1px;
   }
 
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
+  @keyframes blink { 50% { opacity: 0; } }
 
-  /* --- bio --- */
-  .bio {
-    margin-bottom: 56px;
-    max-width: 460px;
+  /* --- links --- */
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
-
-  .bio p {
+  .links a {
+    font-size: 13px;
     color: #71717A;
-    font-size: 14px;
-    line-height: 1.8;
+    text-decoration: none;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
+  .links a:hover { color: #FAFAFA; }
+  .links a svg { width: 15px; height: 15px; }
 
   /* --- section --- */
   .section-label {
@@ -150,9 +173,21 @@
     font-size: 11px;
     font-weight: 500;
     color: #3F3F46;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: #1E1E22;
+    border: 1px solid #27272A;
   }
 
   /* --- project card --- */
@@ -160,37 +195,46 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    padding: 28px;
-    border: 1px solid #18181B;
-    border-radius: 16px;
+    border-radius: 20px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 56px;
-    background: #0F0F12;
+    margin-bottom: 32px;
+    background: rgba(22,22,26,0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid #27272D;
+    overflow: hidden;
   }
 
-  .project:hover {
-    border-color: #27272A;
+  .project:hover { border-color: #2E2E34; }
+
+  .project-hero {
+    position: relative;
+    overflow: hidden;
   }
+
+  /* --- project screenshot --- */
+  .project-screenshot {
+    width: 100%;
+    display: block;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .project-body { padding: 28px 32px 32px; }
 
   .project-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .project-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     color: #FAFAFA;
     letter-spacing: -0.3px;
   }
 
-  .project-badge {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .project-badge { display: flex; align-items: center; gap: 14px; }
 
   .project-live {
     font-family: 'JetBrains Mono', monospace;
@@ -201,7 +245,6 @@
     align-items: center;
     gap: 6px;
   }
-
   .project-live::before {
     content: '';
     width: 6px;
@@ -211,11 +254,7 @@
     box-shadow: 0 0 8px rgba(74,222,128,0.4);
     animation: livepulse 2s ease-in-out infinite;
   }
-
-  @keyframes livepulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(74,222,128,0.4); }
-    50% { opacity: 0.5; box-shadow: 0 0 16px rgba(74,222,128,0.1); }
-  }
+  @keyframes livepulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
   .project-arrow {
     color: #3F3F46;
@@ -223,138 +262,27 @@
     display: flex;
     align-items: center;
   }
-
   .project:hover .project-arrow { color: #71717A; transform: translate(2px, -2px); }
-
   .project-arrow svg { width: 16px; height: 16px; }
 
   .project-desc {
     font-size: 13px;
-    color: #71717A;
+    color: #8C8C96;
     line-height: 1.7;
     margin-bottom: 20px;
   }
 
-  /* --- mini preview --- */
-  .project-preview {
-    background: #18181B;
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 20px;
-    border: 1px solid #1E1E22;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .preview-bar {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 12px;
-  }
-  .preview-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #27272A;
-  }
-
-  .preview-layout {
-    display: flex;
-    gap: 10px;
-    height: 60px;
-  }
-
-  .preview-sidebar {
-    width: 40px;
-    background: #1E1E22;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-
-  .preview-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .preview-line {
-    height: 6px;
-    border-radius: 3px;
-    background: #1E1E22;
-    transition: background 0.3s;
-  }
-  .preview-line:nth-child(1) { width: 70%; }
-  .preview-line:nth-child(2) { width: 50%; }
-  .preview-line:nth-child(3) { width: 85%; }
-
-  .preview-chat {
-    margin-top: auto;
-    height: 14px;
-    border-radius: 4px;
-    background: #1E1E22;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .preview-chat::after {
-    content: '';
-    position: absolute;
-    left: -100%;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(74,222,128,0.08), transparent);
-    animation: shimmer 3s ease-in-out infinite;
-  }
-
-  @keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-  }
-
-
-  /* --- tags --- */
-  .project-stack {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
+  .project-stack { display: flex; gap: 6px; flex-wrap: wrap; }
   .tag {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: #52525B;
+    color: #71717A;
     padding: 4px 10px;
-    border: 1px solid #1E1E22;
+    border: 1px solid #27272A;
     border-radius: 6px;
     transition: all 0.3s;
   }
-
   .project:hover .tag { border-color: #27272A; }
-
-  /* --- links --- */
-  .links {
-    display: flex;
-    gap: 24px;
-  }
-
-  .links a {
-    font-size: 13px;
-    color: #3F3F46;
-    text-decoration: none;
-    transition: color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .links a:hover { color: #A1A1AA; }
-
-  .links a svg {
-    width: 14px;
-    height: 14px;
-  }
 
   /* --- status bar --- */
   .status {
@@ -368,11 +296,11 @@
     color: #27272A;
     display: flex;
     justify-content: space-between;
-    z-index: 1;
+    z-index: 2;
     border-top: 1px solid #111114;
-    background: #09090B;
+    background: rgba(11,11,15,0.8);
+    backdrop-filter: blur(8px);
   }
-
   .status-dot {
     display: inline-block;
     width: 5px;
@@ -383,72 +311,40 @@
     vertical-align: middle;
   }
 
-  @media (max-width: 640px) {
-    .page { padding: 60px 20px 80px; }
-    .name { font-size: 24px; }
+  /* --- mobile: stack vertically --- */
+  @media (max-width: 860px) {
+    .page {
+      flex-direction: column;
+      padding: 80px 20px 80px;
+      gap: 48px;
+    }
+    .left {
+      width: 100%;
+      position: static;
+      border-right: none;
+      padding-right: 0;
+    }
+    .links { flex-direction: row; gap: 20px; }
+    .name { font-size: 30px; }
+    .project-hero { padding: 24px 24px 0; }
+    .project-body { padding: 24px; }
     .status { display: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="glow glow-1"></div>
-<div class="glow glow-2"></div>
+<canvas id="bg"></canvas>
 
 <div class="page">
 
-  <div class="header fade-up">
-    <div class="name">guilherme sequeira</div>
-    <div class="role">
-      <span id="typed"></span><span class="cursor"></span>
-    </div>
-  </div>
+  <!-- LEFT: Profile -->
+  <div class="left reveal">
+    <div class="greeting">hey, i'm Guilherme</div>
+    <div class="name"><span>ML engineer.</span></div>
+    <p class="tagline">MSc Data Science @ UZH. interested in NLP, research, and explainability. previously co-founded Aevux, researched at DDIS Lab.</p>
+    <div id="terminal"></div>
 
-  <div class="bio fade-up">
-    <p>software engineer building tools with AI. interested in search, NLP, and things that ship fast.</p>
-  </div>
-
-  <div class="fade-up">
-    <div class="section-label">projects</div>
-
-    <a href="/folio" class="project" id="project-folio">
-      <div class="project-top">
-        <span class="project-name">folio</span>
-        <div class="project-badge">
-          <span class="project-live">live</span>
-          <span class="project-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
-        </div>
-      </div>
-      <div class="project-desc">upload documents and ask questions in plain english. semantic search powered by claude.</div>
-
-      <div class="project-preview">
-        <div class="preview-bar">
-          <div class="preview-dot"></div>
-          <div class="preview-dot"></div>
-          <div class="preview-dot"></div>
-        </div>
-        <div class="preview-layout">
-          <div class="preview-sidebar"></div>
-          <div class="preview-main">
-            <div class="preview-line"></div>
-            <div class="preview-line"></div>
-            <div class="preview-line"></div>
-            <div class="preview-chat"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-stack">
-        <span class="tag">python</span>
-        <span class="tag">fastapi</span>
-        <span class="tag">claude</span>
-        <span class="tag">chromadb</span>
-      </div>
-    </a>
-  </div>
-
-  <div class="fade-up">
-    <div class="section-label">links</div>
     <div class="links">
       <a href="https://github.com/sequeiragui" target="_blank">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -458,58 +354,146 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
         linkedin
       </a>
-      <a href="mailto:hello@guilhermesequeira.com">
+      <a href="mailto:sequeira.guilherme@hotmail.com">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         email
       </a>
     </div>
   </div>
 
-  <div class="fade-up" style="animation-delay: 0.85s;">
+  <!-- RIGHT: Projects -->
+  <div class="right">
+    <div class="reveal">
+      <div class="section-label">projects</div>
+
+      <a href="/folio" class="project" id="project-folio">
+        <div class="project-hero">
+          <img src="/static/folio-preview.jpg" alt="Folio app screenshot" class="project-screenshot">
+        </div>
+
+        <div class="project-body">
+          <div class="project-top">
+            <span class="project-name">folio</span>
+            <div class="project-badge">
+              <span class="project-live">live</span>
+              <span class="project-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            </div>
+          </div>
+          <div class="project-desc">upload documents and ask questions in plain english. semantic search powered by claude.</div>
+          <div class="project-stack">
+            <span class="tag">python</span>
+            <span class="tag">fastapi</span>
+            <span class="tag">claude</span>
+            <span class="tag">chromadb</span>
+            <span class="tag">aws ec2</span>
+          </div>
+        </div>
+      </a>
+    </div>
   </div>
 
 </div>
 
 <div class="status">
   <span><span class="status-dot"></span>all systems online</span>
-  <span>lisbon, pt</span>
+  <span>zürich, ch</span>
 </div>
 
 <script>
-  // typing effect
-  const phrases = [
-    'building tools with AI',
-    'shipping fast, iterating faster',
-    'search + NLP + good design',
-    'making complex things simple'
-  ];
-  let phraseIdx = 0, charIdx = 0, deleting = false;
-  const typedEl = document.getElementById('typed');
-  const typeSpeed = 60, deleteSpeed = 30, pauseEnd = 2000, pauseStart = 500;
+  // --- animated blob background ---
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+  let w, h;
 
-  function type() {
-    const current = phrases[phraseIdx];
-    if (!deleting) {
-      typedEl.textContent = current.substring(0, charIdx + 1);
-      charIdx++;
-      if (charIdx === current.length) {
-        setTimeout(() => { deleting = true; type(); }, pauseEnd);
-        return;
-      }
-      setTimeout(type, typeSpeed);
-    } else {
-      typedEl.textContent = current.substring(0, charIdx - 1);
-      charIdx--;
-      if (charIdx === 0) {
-        deleting = false;
-        phraseIdx = (phraseIdx + 1) % phrases.length;
-        setTimeout(type, pauseStart);
-        return;
-      }
-      setTimeout(type, deleteSpeed);
-    }
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
   }
-  setTimeout(type, 800);
+  resize();
+  window.addEventListener('resize', resize);
+
+  const blobs = [
+    { x: 0.75, y: 0.15, r: 400, color: [59, 130, 246], speed: 0.0003, phase: 0 },
+    { x: 0.2, y: 0.75, r: 350, color: [139, 92, 246], speed: 0.00025, phase: 2 },
+    { x: 0.5, y: 0.45, r: 280, color: [74, 222, 128], speed: 0.0002, phase: 4 },
+  ];
+
+  function draw(t) {
+    ctx.clearRect(0, 0, w, h);
+    for (const b of blobs) {
+      const cx = w * b.x + Math.sin(t * b.speed + b.phase) * 140;
+      const cy = h * b.y + Math.cos(t * b.speed * 1.3 + b.phase) * 100;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, b.r);
+      grad.addColorStop(0, `rgba(${b.color.join(',')}, 0.055)`);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, b.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // --- scroll reveal ---
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 120);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => observer.observe(el));
+
+  // --- terminal typing effect ---
+  const lines = [
+    'Python, SQL, Java, R, Bash',
+    'PyTorch, TensorFlow, Scikit-learn',
+    'Transformers, NLP, Recommender Systems',
+    'AWS, Docker, Git, FastAPI',
+    'Pandas, Polars, Spark'
+  ];
+  const terminal = document.getElementById('terminal');
+  let lineIdx = 0;
+
+  function typeLine() {
+    if (lineIdx >= lines.length) return;
+    const row = document.createElement('div');
+    row.className = 'term-line';
+    const prompt = document.createElement('span');
+    prompt.className = 'term-prompt';
+    prompt.textContent = '>';
+    const text = document.createElement('span');
+    text.className = 'term-text';
+    const cursor = document.createElement('span');
+    cursor.className = 'term-cursor';
+    row.appendChild(prompt);
+    row.appendChild(text);
+    row.appendChild(cursor);
+    terminal.appendChild(row);
+
+    const str = lines[lineIdx];
+    let i = 0;
+    function tick() {
+      text.textContent = str.substring(0, i + 1);
+      i++;
+      if (i < str.length) {
+        setTimeout(tick, 40);
+      } else {
+        if (lineIdx < lines.length - 1) {
+          cursor.remove();
+        }
+        lineIdx++;
+        if (lineIdx < lines.length) {
+          setTimeout(typeLine, 300);
+        }
+      }
+    }
+    setTimeout(tick, 200);
+  }
+  setTimeout(typeLine, 800);
 </script>
 
 </body>
