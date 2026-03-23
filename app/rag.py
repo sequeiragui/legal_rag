@@ -133,7 +133,7 @@ Rules:
 
 @app.get("/")
 async def root():
-    return FileResponse("static/index.html")
+    return FileResponse("static/folio.html")
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
