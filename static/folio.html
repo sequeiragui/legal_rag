@@ -28,8 +28,8 @@
     --accent: #52525B;
     --accent-light: #F4F4F5;
     --accent-glow: rgba(82,82,91,0.10);
-    --green: #16A34A;
-    --green-light: #F0FDF4;
+    --green: #4338CA;
+    --green-light: #EEF2FF;
     --red: #DC2626;
     --red-light: #FEF2F2;
     --blue: #2563EB;
@@ -86,12 +86,12 @@
   .logo-icon {
     width: 30px;
     height: 30px;
-    background: linear-gradient(135deg, #16A34A, #15803D);
+    background: linear-gradient(135deg, #4338CA, #3730A3);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+    box-shadow: 0 2px 8px rgba(67,56,202,0.25);
   }
 
   .logo-icon svg { width: 15px; height: 15px; }
@@ -152,7 +152,7 @@
   }
   .convo-item-icon svg { width: 13px; height: 13px; }
   .convo-item-icon.chat { background: var(--sidebar-border); color: var(--sidebar-muted); }
-  .convo-item-icon.saved { background: rgba(22,163,74,0.15); color: var(--green); }
+  .convo-item-icon.saved { background: rgba(67,56,202,0.12); color: var(--green); }
 
   .convo-item-text {
     flex: 1; min-width: 0; font-size: 13px; color: var(--sidebar-text);
@@ -221,7 +221,7 @@
     transition: all var(--transition); color: white;
     font-family: inherit; font-size: 12px; font-weight: 600;
   }
-  .extract-btn:hover { background: #15803D; }
+  .extract-btn:hover { background: #3730A3; }
   .extract-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .extract-btn svg { width: 14px; height: 14px; }
 
@@ -266,7 +266,7 @@
     transition: all var(--transition); color: var(--green);
     font-family: inherit; font-size: 11px; font-weight: 600;
   }
-  .save-graph-btn:hover { background: var(--green); color: white; }
+  .save-graph-btn:hover { background: #4338CA; color: white; }
   .save-graph-btn svg { width: 12px; height: 12px; }
 
   .graph-canvas {
@@ -291,9 +291,9 @@
   }
   .empty-logo {
     width: 64px; height: 64px;
-    background: linear-gradient(135deg, #16A34A, #15803D);
+    background: linear-gradient(135deg, #4338CA, #3730A3);
     border-radius: 18px; display: flex; align-items: center; justify-content: center;
-    margin-bottom: 8px; box-shadow: 0 4px 16px rgba(22,163,74,0.2);
+    margin-bottom: 8px; box-shadow: 0 4px 16px rgba(67,56,202,0.2);
   }
   .empty-logo svg { width: 28px; height: 28px; }
   .empty-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
@@ -329,7 +329,7 @@
     font-size: 11px; font-weight: 700; margin-top: 1px;
   }
   .avatar.ai {
-    background: linear-gradient(135deg, #16A34A, #15803D);
+    background: linear-gradient(135deg, #4338CA, #3730A3);
     color: white; font-size: 10px;
   }
   .avatar.user { background: var(--border); color: var(--text-secondary); }
@@ -377,12 +377,12 @@
 
   .send-btn {
     width: 34px; height: 34px; border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, #16A34A, #15803D);
+    background: linear-gradient(135deg, #4338CA, #3730A3);
     border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: all var(--transition);
-    box-shadow: 0 2px 6px rgba(22,163,74,0.2);
+    box-shadow: 0 2px 6px rgba(67,56,202,0.2);
   }
-  .send-btn:hover { box-shadow: 0 4px 12px rgba(22,163,74,0.3); transform: translateY(-1px); }
+  .send-btn:hover { box-shadow: 0 4px 12px rgba(67,56,202,0.3); transform: translateY(-1px); }
   .send-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; transform: none; }
   .send-btn svg { width: 15px; height: 15px; fill: white; }
 
@@ -455,7 +455,7 @@
     border-radius: var(--radius-sm); font-family: inherit; font-size: 14px;
     color: var(--text); outline: none; transition: border var(--transition);
   }
-  .modal input[type="text"]:focus { border-color: var(--green); }
+  .modal input[type="text"]:focus { border-color: #4338CA; }
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
   .modal-cancel {
     padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-xs);
@@ -468,7 +468,7 @@
     background: var(--green); cursor: pointer; font-family: inherit; font-size: 13px;
     font-weight: 600; color: white; transition: all var(--transition);
   }
-  .modal-save:hover { background: #15803D; }
+  .modal-save:hover { background: #3730A3; }
 
   .toast {
     position: fixed; bottom: 100px; left: 50%;
@@ -916,7 +916,7 @@ function renderFlowchartSVG(data) {
     svg += `<path d="M${fx},${fy} C${fx},${midY} ${tx},${midY} ${tx},${ty}" fill="none" stroke="#D4D4CF" stroke-width="1.5" marker-end="url(#arrow)"/>`;
     if (e.label) {
       const lx = (fx + tx) / 2, ly = midY - 6;
-      svg += `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="11" font-weight="600" fill="${e.label === 'Yes' ? '#16A34A' : e.label === 'No' ? '#DC2626' : '#71717A'}">${escapeHtml(e.label)}</text>`;
+      svg += `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="11" font-weight="600" fill="${e.label === 'Yes' ? '#4338CA' : e.label === 'No' ? '#DC2626' : '#71717A'}">${escapeHtml(e.label)}</text>`;
     }
   });
 
@@ -925,7 +925,7 @@ function renderFlowchartSVG(data) {
     const nd = nodeMap[n.id];
     const x = nd.x, y = nd.y;
     if (n.type === 'start') {
-      svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="26" fill="#16A34A" stroke="none"/>`;
+      svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="26" fill="#4338CA" stroke="none"/>`;
       svg += `<text x="${x + nodeW/2}" y="${y + nodeH/2 + 5}" text-anchor="middle" font-size="13" font-weight="600" fill="white">${escapeHtml(n.label)}</text>`;
     } else if (n.type === 'end') {
       svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="26" fill="#3F3F46" stroke="none"/>`;
@@ -969,14 +969,14 @@ function renderSequentialSVG(data) {
 
     // Step number
     const numX = padX - 6;
-    svg += `<circle cx="${numX}" cy="${y + nodeH/2}" r="12" fill="${i === 0 ? '#16A34A' : i === nodes.length-1 ? '#3F3F46' : '#F4F4F5'}" stroke="${i === 0 || i === nodes.length-1 ? 'none' : '#E8E8E3'}" stroke-width="1"/>`;
+    svg += `<circle cx="${numX}" cy="${y + nodeH/2}" r="12" fill="${i === 0 ? '#4338CA' : i === nodes.length-1 ? '#3F3F46' : '#F4F4F5'}" stroke="${i === 0 || i === nodes.length-1 ? 'none' : '#E8E8E3'}" stroke-width="1"/>`;
     svg += `<text x="${numX}" y="${y + nodeH/2 + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="${i === 0 || i === nodes.length-1 ? 'white' : '#71717A'}">${i + 1}</text>`;
 
     // Node
     const nx = padX + 14;
     const nw = nodeW - 14;
-    const fill = i === 0 ? '#F0FDF4' : i === nodes.length - 1 ? '#F4F4F5' : 'white';
-    const stroke = i === 0 ? '#BBF7D0' : i === nodes.length - 1 ? '#D4D4D8' : '#E8E8E3';
+    const fill = i === 0 ? '#EEF2FF' : i === nodes.length - 1 ? '#F4F4F5' : 'white';
+    const stroke = i === 0 ? '#C7D2FE' : i === nodes.length - 1 ? '#D4D4D8' : '#E8E8E3';
     svg += `<rect x="${nx}" y="${y}" width="${nw}" height="${nodeH}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
     svg += `<text x="${nx + nw/2}" y="${y + nodeH/2 + 5}" text-anchor="middle" font-size="13" font-weight="500" fill="#1A1A1D">${escapeHtml(n.label)}</text>`;
 
