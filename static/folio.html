@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Folio</title>
+<title>ProcessKeeper</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,8 +29,13 @@
     --accent-light: #F4F4F5;
     --accent-glow: rgba(82,82,91,0.10);
     --green: #16A34A;
+    --green-light: #F0FDF4;
     --red: #DC2626;
     --red-light: #FEF2F2;
+    --blue: #2563EB;
+    --blue-light: #EFF6FF;
+    --amber: #D97706;
+    --amber-light: #FFFBEB;
 
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
@@ -81,12 +86,12 @@
   .logo-icon {
     width: 30px;
     height: 30px;
-    background: linear-gradient(135deg, #52525B, #3F3F46);
+    background: linear-gradient(135deg, #16A34A, #15803D);
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(63,63,70,0.25);
+    box-shadow: 0 2px 8px rgba(22,163,74,0.25);
   }
 
   .logo-icon svg { width: 15px; height: 15px; }
@@ -139,214 +144,178 @@
   }
 
   .convo-item:hover { background: var(--sidebar-hover); }
-  .convo-item.active { background: var(--sidebar-surface); border-left-color: var(--sidebar-text); }
+  .convo-item.active { background: var(--sidebar-surface); border-left-color: var(--green); }
+
+  .convo-item-icon {
+    width: 22px; height: 22px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .convo-item-icon svg { width: 13px; height: 13px; }
+  .convo-item-icon.chat { background: var(--sidebar-border); color: var(--sidebar-muted); }
+  .convo-item-icon.saved { background: rgba(22,163,74,0.15); color: var(--green); }
 
   .convo-item-text {
-    flex: 1;
-    min-width: 0;
-    font-size: 13px;
-    color: var(--sidebar-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    opacity: 0.85;
+    flex: 1; min-width: 0; font-size: 13px; color: var(--sidebar-text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.85;
   }
-
   .convo-item.active .convo-item-text { opacity: 1; }
 
   .convo-item .delete-convo {
-    display: none;
-    width: 22px;
-    height: 22px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: var(--sidebar-muted);
-    border-radius: 4px;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    display: none; width: 22px; height: 22px; border: none; background: none;
+    cursor: pointer; color: var(--sidebar-muted); border-radius: 4px;
+    align-items: center; justify-content: center; flex-shrink: 0;
   }
-
   .convo-item:hover .delete-convo { display: flex; }
   .convo-item .delete-convo:hover { color: var(--red); background: rgba(220,38,38,0.12); }
   .convo-item .delete-convo svg { width: 13px; height: 13px; }
 
   .convo-empty {
-    font-size: 13px;
-    color: var(--sidebar-muted);
-    padding: 20px 16px;
-    text-align: center;
-    line-height: 1.6;
-    font-style: italic;
+    font-size: 13px; color: var(--sidebar-muted); padding: 20px 16px;
+    text-align: center; line-height: 1.6; font-style: italic;
   }
 
   .sidebar-footer { padding: 12px; border-top: 1px solid var(--sidebar-border); }
 
-  .docs-btn {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--sidebar-border);
-    background: var(--sidebar-surface);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--sidebar-text);
-    transition: all var(--transition);
-    font-family: inherit;
-    opacity: 0.8;
+  .library-btn {
+    width: 100%; padding: 10px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--sidebar-border); background: var(--sidebar-surface);
+    cursor: pointer; display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500; color: var(--sidebar-text);
+    transition: all var(--transition); font-family: inherit; opacity: 0.8;
   }
-
-  .docs-btn:hover { opacity: 1; background: var(--sidebar-hover); border-color: #3E3E44; }
-  .docs-btn svg { width: 16px; height: 16px; color: var(--sidebar-muted); flex-shrink: 0; }
-
-  .docs-btn-count {
-    margin-left: auto;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--sidebar-text);
-    background: var(--sidebar-border);
-    padding: 2px 8px;
-    border-radius: 10px;
+  .library-btn:hover { opacity: 1; background: var(--sidebar-hover); border-color: #3E3E44; }
+  .library-btn svg { width: 16px; height: 16px; color: var(--sidebar-muted); flex-shrink: 0; }
+  .library-btn-count {
+    margin-left: auto; font-size: 11px; font-weight: 600; color: var(--sidebar-text);
+    background: var(--sidebar-border); padding: 2px 8px; border-radius: 10px;
   }
 
   /* MAIN */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-    background: var(--bg);
-  }
+  .main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--bg); }
 
   .topbar {
-    padding: 14px 32px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--surface);
-    flex-shrink: 0;
+    padding: 14px 32px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); flex-shrink: 0;
   }
-
   .topbar-title { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
 
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-    background: var(--border-light);
-    padding: 5px 12px 5px 9px;
-    border-radius: 20px;
-  }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
 
-  .status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--border-hover);
-    transition: all var(--transition);
+  .graph-type-toggle {
+    display: flex; align-items: center; gap: 0; border: 1px solid var(--border);
+    border-radius: var(--radius-xs); overflow: hidden; background: var(--bg);
   }
+  .graph-type-btn {
+    font-family: inherit; font-size: 11px; font-weight: 600; padding: 5px 12px;
+    border: none; background: transparent; cursor: pointer; color: var(--text-muted);
+    transition: all var(--transition); letter-spacing: 0.2px;
+  }
+  .graph-type-btn.active { background: var(--text); color: white; }
+  .graph-type-btn:hover:not(.active) { color: var(--text); }
 
-  .status-dot.active { background: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,0.15); }
+  .extract-btn {
+    height: 32px; padding: 0 14px; border-radius: var(--radius-xs);
+    border: 1px solid var(--green); background: var(--green);
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+    transition: all var(--transition); color: white;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+  }
+  .extract-btn:hover { background: #15803D; }
+  .extract-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .extract-btn svg { width: 14px; height: 14px; }
 
   /* VIEWS */
-  .view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+  .view { display: none; flex: 1; overflow: hidden; }
   .view.active { display: flex; }
 
-  .chat-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 32px 32px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
+  /* CHAT VIEW - split layout */
+  #chat-view { flex-direction: row; }
+
+  .chat-panel {
+    flex: 1; display: flex; flex-direction: column; min-width: 0;
+    border-right: 1px solid var(--border);
   }
 
+  .graph-panel {
+    width: 0; overflow: hidden; transition: width 0.3s ease;
+    display: flex; flex-direction: column; background: var(--bg);
+  }
+  .graph-panel.open { width: 50%; }
+
+  .graph-panel-header {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); flex-shrink: 0;
+  }
+  .graph-panel-title { font-size: 13px; font-weight: 600; }
+  .graph-panel-actions { display: flex; align-items: center; gap: 6px; }
+
+  .icon-btn {
+    width: 30px; height: 30px; border-radius: var(--radius-xs); border: 1px solid var(--border);
+    background: var(--surface); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: all var(--transition); color: var(--text-muted);
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--border-hover); }
+  .icon-btn svg { width: 14px; height: 14px; }
+
+  .save-graph-btn {
+    height: 30px; padding: 0 12px; border-radius: var(--radius-xs);
+    border: 1px solid var(--green); background: var(--green-light);
+    cursor: pointer; display: flex; align-items: center; gap: 5px;
+    transition: all var(--transition); color: var(--green);
+    font-family: inherit; font-size: 11px; font-weight: 600;
+  }
+  .save-graph-btn:hover { background: var(--green); color: white; }
+  .save-graph-btn svg { width: 12px; height: 12px; }
+
+  .graph-canvas {
+    flex: 1; overflow: auto; padding: 24px; display: flex;
+    align-items: flex-start; justify-content: center;
+  }
+  .graph-canvas svg { max-width: 100%; height: auto; }
+
+  .chat-area {
+    flex: 1; overflow-y: auto; padding: 32px 32px 16px;
+    display: flex; flex-direction: column; gap: 20px; align-items: center;
+  }
   .chat-area::-webkit-scrollbar { width: 5px; }
   .chat-area::-webkit-scrollbar-track { background: transparent; }
   .chat-area::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 5px; }
 
   /* EMPTY STATE */
   .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    text-align: center;
-    padding: 40px 20px;
-    width: 100%;
-    max-width: 680px;
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 14px; text-align: center; padding: 40px 20px;
+    width: 100%; max-width: 680px;
   }
-
   .empty-logo {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, #52525B, #3F3F46);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    box-shadow: 0 4px 16px rgba(63,63,70,0.2);
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #16A34A, #15803D);
+    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 8px; box-shadow: 0 4px 16px rgba(22,163,74,0.2);
   }
-
   .empty-logo svg { width: 28px; height: 28px; }
-
   .empty-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
-  .empty-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 400px; }
+  .empty-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 440px; }
 
   .suggestion-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-top: 12px;
+    font-size: 11px; font-weight: 600; color: var(--text-muted);
+    letter-spacing: 0.5px; text-transform: uppercase; margin-top: 12px;
   }
-
-  .suggestion-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    width: 100%;
-    max-width: 460px;
-  }
-
+  .suggestion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 460px; }
   .suggestion {
-    font-size: 13px;
-    color: var(--text-secondary);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: all var(--transition);
-    text-align: left;
+    font-size: 13px; color: var(--text-secondary); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+    cursor: pointer; transition: all var(--transition); text-align: left;
   }
-
   .suggestion:hover { border-color: var(--border-hover); background: var(--border-light); }
 
   /* MESSAGES */
   .message {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    max-width: 680px;
+    display: flex; gap: 12px; width: 100%; max-width: 680px;
     animation: fadein 0.25s ease;
   }
-
   .message.user { flex-direction: row-reverse; }
 
   @keyframes fadein {
@@ -355,48 +324,25 @@
   }
 
   .avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    margin-top: 1px;
+    width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; margin-top: 1px;
   }
-
   .avatar.ai {
-    background: linear-gradient(135deg, #52525B, #3F3F46);
-    color: white;
-    font-size: 10px;
+    background: linear-gradient(135deg, #16A34A, #15803D);
+    color: white; font-size: 10px;
   }
-
   .avatar.user { background: var(--border); color: var(--text-secondary); }
 
   .bubble { padding: 12px 16px; font-size: 14px; line-height: 1.7; max-width: 580px; }
-
   .bubble.ai {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 2px 14px 14px 14px;
-    box-shadow: var(--shadow-sm);
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); border-radius: 2px 14px 14px 14px; box-shadow: var(--shadow-sm);
   }
-
-  .bubble.user {
-    background: var(--text);
-    color: #FAFAF8;
-    border-radius: 14px 2px 14px 14px;
-  }
-
+  .bubble.user { background: var(--text); color: #FAFAF8; border-radius: 14px 2px 14px 14px; }
   .bubble.thinking {
-    color: var(--text-muted);
-    font-style: italic;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 2px 14px 14px 14px;
+    color: var(--text-muted); font-style: italic; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 2px 14px 14px 14px;
   }
 
   .thinking-dots { display: inline-flex; gap: 3px; margin-left: 4px; vertical-align: middle; }
@@ -414,21 +360,12 @@
 
   /* INPUT */
   .input-area { padding: 8px 32px 24px; flex-shrink: 0; display: flex; justify-content: center; }
-
   .input-box {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    padding: 8px 8px 8px 18px;
-    transition: all var(--transition);
-    width: 100%;
-    max-width: 680px;
-    box-shadow: var(--shadow-sm);
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 14px; display: flex; align-items: flex-end; gap: 8px;
+    padding: 8px 8px 8px 18px; transition: all var(--transition);
+    width: 100%; max-width: 680px; box-shadow: var(--shadow-sm);
   }
-
   .input-box:focus-within { border-color: var(--border-hover); }
 
   textarea {
@@ -436,112 +373,102 @@
     font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
     line-height: 1.5; max-height: 120px; min-height: 24px; padding: 6px 0;
   }
-
   textarea::placeholder { color: var(--text-hint); }
 
   .send-btn {
     width: 34px; height: 34px; border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, #52525B, #3F3F46);
+    background: linear-gradient(135deg, #16A34A, #15803D);
     border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: all var(--transition);
-    box-shadow: 0 2px 6px rgba(63,63,70,0.2);
+    box-shadow: 0 2px 6px rgba(22,163,74,0.2);
   }
-
-  .send-btn:hover { box-shadow: 0 4px 12px rgba(63,63,70,0.3); transform: translateY(-1px); }
+  .send-btn:hover { box-shadow: 0 4px 12px rgba(22,163,74,0.3); transform: translateY(-1px); }
   .send-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; transform: none; }
   .send-btn svg { width: 15px; height: 15px; fill: white; }
 
-  /* DOCUMENTS VIEW */
-  .docs-view-inner { flex: 1; overflow-y: auto; padding: 32px; display: flex; flex-direction: column; align-items: center; }
-  .docs-container { width: 100%; max-width: 600px; }
-
-  .docs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .docs-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  /* LIBRARY VIEW */
+  #library-view { flex-direction: column; }
+  .library-inner { flex: 1; overflow-y: auto; padding: 32px; display: flex; flex-direction: column; align-items: center; }
+  .library-container { width: 100%; max-width: 700px; }
+  .library-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .library-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
 
   .back-btn {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 13px; font-weight: 500; color: var(--text-muted);
-    background: none; border: none; cursor: pointer;
-    padding: 6px 12px; border-radius: var(--radius-xs);
-    transition: all var(--transition); font-family: inherit;
+    display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); background: none; border: none; cursor: pointer;
+    padding: 6px 12px; border-radius: var(--radius-xs); transition: all var(--transition); font-family: inherit;
   }
-
   .back-btn:hover { color: var(--text); background: var(--border-light); }
   .back-btn svg { width: 16px; height: 16px; }
 
-  .upload-zone {
-    border: 2px dashed var(--border-hover);
-    border-radius: var(--radius);
-    padding: 36px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all var(--transition);
-    background: var(--surface);
-    margin-bottom: 24px;
+  .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .process-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; cursor: pointer; transition: all var(--transition);
+  }
+  .process-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .process-card-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .process-card-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 12px; }
+  .process-card-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .process-card-badge.flowchart { background: var(--blue-light); color: var(--blue); }
+  .process-card-badge.sequential { background: var(--amber-light); color: var(--amber); }
+
+  .process-card-actions { display: flex; justify-content: flex-end; margin-top: 12px; }
+
+  .library-empty {
+    text-align: center; padding: 48px 24px; font-size: 14px; color: var(--text-muted);
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   }
 
-  .upload-zone:hover { border-color: var(--text-muted); }
-  .upload-zone.dragover { border-color: var(--text); border-style: solid; }
-
-  .upload-zone-icon {
-    width: 48px; height: 48px; margin: 0 auto 12px;
-    background: var(--border-light); border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
+  /* PROCESS DETAIL VIEW */
+  #detail-view { flex-direction: column; }
+  .detail-inner { flex: 1; overflow: auto; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+  .detail-container { width: 100%; max-width: 900px; }
+  .detail-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .detail-header h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .detail-graph {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 32px; min-height: 300px; display: flex; align-items: center; justify-content: center;
+    overflow: auto;
   }
+  .detail-graph svg { max-width: 100%; height: auto; }
 
-  .upload-zone:hover .upload-zone-icon { background: var(--accent-light); }
-  .upload-zone-icon svg { width: 22px; height: 22px; color: var(--text-muted); }
-  .upload-zone-text { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
-  .upload-zone-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-
-  .doc-table { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-
-  .doc-table-header {
-    display: grid; grid-template-columns: 1fr 80px 60px;
-    padding: 10px 16px; border-bottom: 1px solid var(--border);
-    font-size: 11px; font-weight: 600; color: var(--text-muted);
-    letter-spacing: 0.3px; text-transform: uppercase;
+  /* SAVE MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none;
+    align-items: center; justify-content: center; z-index: 200;
+    backdrop-filter: blur(4px);
   }
-
-  .doc-row {
-    display: grid; grid-template-columns: 1fr 80px 60px;
-    padding: 12px 16px; align-items: center;
-    border-bottom: 1px solid var(--border-light);
-    transition: background var(--transition);
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: var(--radius); padding: 28px;
+    width: 100%; max-width: 400px; box-shadow: var(--shadow-lg);
   }
-
-  .doc-row:last-child { border-bottom: none; }
-  .doc-row:hover { background: var(--bg); }
-
-  .doc-row-name {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 13px; font-weight: 500; min-width: 0;
+  .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .modal-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+  .modal input[type="text"] {
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); font-family: inherit; font-size: 14px;
+    color: var(--text); outline: none; transition: border var(--transition);
   }
-
-  .doc-row-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .doc-row-icon {
-    width: 32px; height: 32px; border-radius: var(--radius-xs);
-    background: var(--red-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  .modal input[type="text"]:focus { border-color: var(--green); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  .modal-cancel {
+    padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-xs);
+    background: var(--surface); cursor: pointer; font-family: inherit; font-size: 13px;
+    font-weight: 500; color: var(--text-muted); transition: all var(--transition);
   }
-
-  .doc-row-icon svg { width: 15px; height: 15px; color: var(--red); }
-  .doc-row-size { font-size: 12px; color: var(--text-muted); }
-  .doc-row-actions { display: flex; justify-content: flex-end; }
-
-  .delete-doc-btn {
-    width: 28px; height: 28px; border: none; background: none;
-    cursor: pointer; color: var(--text-muted); border-radius: var(--radius-xs);
-    display: flex; align-items: center; justify-content: center;
-    transition: all var(--transition);
+  .modal-cancel:hover { color: var(--text); }
+  .modal-save {
+    padding: 8px 20px; border: none; border-radius: var(--radius-xs);
+    background: var(--green); cursor: pointer; font-family: inherit; font-size: 13px;
+    font-weight: 600; color: white; transition: all var(--transition);
   }
-
-  .delete-doc-btn:hover { color: var(--red); background: var(--red-light); }
-  .delete-doc-btn svg { width: 15px; height: 15px; }
-
-  .doc-table-empty { padding: 32px; text-align: center; font-size: 13px; color: var(--text-muted); }
-
-  #docs-file-input { display: none; }
+  .modal-save:hover { background: #15803D; }
 
   .toast {
     position: fixed; bottom: 100px; left: 50%;
@@ -551,9 +478,7 @@
     border-radius: 10px; display: none; z-index: 100;
     box-shadow: var(--shadow-lg); border: 1px solid var(--sidebar-border);
   }
-
   .toast.show { display: block; animation: toastin 0.3s ease forwards; }
-
   @keyframes toastin {
     from { opacity: 0; transform: translateX(-50%) translateY(10px); }
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -561,13 +486,6 @@
 
   .bubble.ai p { margin-bottom: 8px; }
   .bubble.ai p:last-child { margin-bottom: 0; }
-  .bubble.ai code {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    background: var(--bg); padding: 2px 6px; border-radius: 4px;
-    border: 1px solid var(--border-light);
-  }
-  .bubble.ai ul, .bubble.ai ol { padding-left: 20px; margin-bottom: 8px; }
-  .bubble.ai li { margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -577,13 +495,12 @@
     <div class="logo">
       <div class="logo-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
         </svg>
       </div>
-      Folio
+      ProcessKeeper
     </div>
-    <button class="new-chat-btn" onclick="newConversation()" title="New chat">
+    <button class="new-chat-btn" onclick="newSession()" title="New session">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
@@ -591,93 +508,153 @@
     </button>
   </div>
 
-  <div class="sidebar-section"><span class="sidebar-label">History</span></div>
+  <div class="sidebar-section"><span class="sidebar-label">Sessions</span></div>
   <div class="convo-list" id="convo-list">
-    <div class="convo-empty" id="convo-empty">Your conversations will show up here.</div>
+    <div class="convo-empty" id="convo-empty">Start a session to capture a process.</div>
   </div>
 
   <div class="sidebar-footer">
-    <button class="docs-btn" onclick="showView('docs')">
+    <button class="library-btn" onclick="showView('library')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
       </svg>
-      Documents
-      <span class="docs-btn-count" id="docs-btn-count">0</span>
+      Process Library
+      <span class="library-btn-count" id="library-count">0</span>
     </button>
   </div>
 </div>
 
 <div class="main">
   <div class="topbar">
-    <div class="topbar-title" id="topbar-title">New chat</div>
-    <div class="status-indicator">
-      <div class="status-dot" id="status-dot"></div>
-      <span id="status-text">No documents indexed</span>
+    <div class="topbar-title" id="topbar-title">New session</div>
+    <div class="topbar-actions">
+      <div class="graph-type-toggle">
+        <button class="graph-type-btn active" data-type="flowchart" onclick="setGraphType('flowchart')">Flowchart</button>
+        <button class="graph-type-btn" data-type="sequential" onclick="setGraphType('sequential')">Sequential</button>
+      </div>
+      <button class="extract-btn" id="extract-btn" onclick="extractGraph()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        Generate Graph
+      </button>
     </div>
   </div>
 
+  <!-- CHAT VIEW -->
   <div class="view active" id="chat-view">
-    <div class="chat-area" id="chat-area">
-      <div class="empty-state" id="empty-state">
-        <div class="empty-logo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-          </svg>
+    <div class="chat-panel">
+      <div class="chat-area" id="chat-area">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div class="empty-title">Capture a process</div>
+          <div class="empty-sub">Describe a procedure you do at work. ProcessKeeper will ask follow-up questions, then map it into a clear graph your team can keep.</div>
+          <div class="suggestion-label">Try starting with</div>
+          <div class="suggestion-grid">
+            <div class="suggestion" onclick="fillSuggestion(this)">How I deploy to production</div>
+            <div class="suggestion" onclick="fillSuggestion(this)">Our incident response process</div>
+            <div class="suggestion" onclick="fillSuggestion(this)">How I onboard a new client</div>
+            <div class="suggestion" onclick="fillSuggestion(this)">Our monthly reporting workflow</div>
+          </div>
         </div>
-        <div class="empty-title">What would you like to know?</div>
-        <div class="empty-sub">Drop in a document and ask away. Folio reads it so you don't have to.</div>
-        <div class="suggestion-label">Try asking</div>
-        <div class="suggestion-grid">
-          <div class="suggestion" onclick="fillSuggestion(this)">What are the key terms?</div>
-          <div class="suggestion" onclick="fillSuggestion(this)">Summarize this document</div>
-          <div class="suggestion" onclick="fillSuggestion(this)">What are the termination clauses?</div>
-          <div class="suggestion" onclick="fillSuggestion(this)">List all obligations</div>
+      </div>
+      <div class="input-area">
+        <div class="input-box">
+          <textarea id="query-input" placeholder="Describe your process..." rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
         </div>
       </div>
     </div>
-    <div class="input-area">
-      <div class="input-box">
-        <textarea id="query-input" placeholder="Ask Folio anything..." rows="1"
-          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="send-btn" id="send-btn" onclick="sendQuery()">
-          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
+    <div class="graph-panel" id="graph-panel">
+      <div class="graph-panel-header">
+        <span class="graph-panel-title" id="graph-panel-title">Process Graph</span>
+        <div class="graph-panel-actions">
+          <button class="save-graph-btn" onclick="openSaveModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Save
+          </button>
+          <button class="icon-btn" onclick="downloadSVG()" title="Download SVG">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <button class="icon-btn" onclick="closeGraphPanel()" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
       </div>
+      <div class="graph-canvas" id="graph-canvas"></div>
     </div>
   </div>
 
-  <div class="view" id="docs-view">
-    <div class="docs-view-inner">
-      <div class="docs-container">
-        <div class="docs-header">
-          <h2>Documents</h2>
+  <!-- LIBRARY VIEW -->
+  <div class="view" id="library-view">
+    <div class="library-inner">
+      <div class="library-container">
+        <div class="library-header">
+          <h2>Process Library</h2>
           <button class="back-btn" onclick="showView('chat')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
             </svg>
-            Back to chat
+            Back
           </button>
         </div>
-
-        <div class="upload-zone" id="upload-zone">
-          <div class="upload-zone-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-          </div>
-          <div class="upload-zone-text">Upload PDF</div>
-          <div class="upload-zone-hint">Drag & drop or click to browse</div>
-          <input type="file" id="docs-file-input" accept=".pdf" multiple>
-        </div>
-
-        <div class="doc-table" id="doc-table">
-          <div class="doc-table-header"><span>Name</span><span>Size</span><span></span></div>
-          <div id="doc-table-body"><div class="doc-table-empty">No documents uploaded yet</div></div>
-        </div>
+        <div id="library-grid" class="process-grid"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div class="view" id="detail-view">
+    <div class="detail-inner">
+      <div class="detail-container">
+        <div class="detail-header">
+          <h2 id="detail-title">Process</h2>
+          <div style="display:flex;gap:8px;">
+            <button class="icon-btn" onclick="downloadDetailSVG()" title="Download SVG">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            <button class="back-btn" onclick="showView('library')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+              </svg>
+              Back
+            </button>
+          </div>
+        </div>
+        <div class="detail-graph" id="detail-graph"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE MODAL -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal">
+    <h3>Save Process</h3>
+    <p class="modal-sub">Give this process a name for your team's library.</p>
+    <input type="text" id="save-title" placeholder="e.g. Production Deployment Process">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeSaveModal()">Cancel</button>
+      <button class="modal-save" onclick="saveProcess()">Save to Library</button>
     </div>
   </div>
 </div>
@@ -686,153 +663,447 @@
 
 <script>
 const API = '';
-let conversations = JSON.parse(localStorage.getItem('folio_convos') || '[]');
-let activeConvoId = null;
-let docCount = 0;
+let sessions = JSON.parse(localStorage.getItem('pk_sessions') || '[]');
+let activeSessionId = null;
+let graphType = 'flowchart';
+let currentGraphData = null;
+let processCount = 0;
 
-const pdfIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
 const trashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>`;
 const chatSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
 
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(name + '-view').classList.add('active');
-  if (name === 'docs') { document.getElementById('topbar-title').textContent = 'Documents'; loadDocuments(); }
-  else updateTopbarTitle();
+  if (name === 'library') {
+    document.getElementById('topbar-title').textContent = 'Process Library';
+    loadLibrary();
+  } else if (name === 'chat') {
+    updateTopbar();
+  }
 }
 
-function saveConversations() { localStorage.setItem('folio_convos', JSON.stringify(conversations)); }
+function saveSessions() { localStorage.setItem('pk_sessions', JSON.stringify(sessions)); }
 
-function newConversation() {
-  const convo = { id: 'c_' + Date.now(), title: 'New chat', messages: [], created: Date.now() };
-  conversations.unshift(convo); saveConversations(); switchToConvo(convo.id); showView('chat');
+function newSession() {
+  const s = { id: 'sess_' + Date.now(), title: 'New session', messages: [], created: Date.now() };
+  sessions.unshift(s); saveSessions(); switchToSession(s.id); showView('chat');
+  closeGraphPanel();
 }
 
-function switchToConvo(id) { activeConvoId = id; renderConvoList(); renderChat(); updateTopbarTitle(); showView('chat'); }
+function switchToSession(id) {
+  activeSessionId = id; renderSessionList(); renderChat(); updateTopbar(); showView('chat');
+}
 
-function deleteConversation(id, e) {
+function deleteSession(id, e) {
   e.stopPropagation();
-  conversations = conversations.filter(c => c.id !== id); saveConversations();
-  if (activeConvoId === id) { activeConvoId = conversations.length ? conversations[0].id : null; if (activeConvoId) renderChat(); else resetChatToEmpty(); }
-  renderConvoList(); updateTopbarTitle();
+  sessions = sessions.filter(s => s.id !== id); saveSessions();
+  if (activeSessionId === id) {
+    activeSessionId = sessions.length ? sessions[0].id : null;
+    if (activeSessionId) renderChat(); else resetChatToEmpty();
+  }
+  renderSessionList(); updateTopbar();
 }
 
-function getActiveConvo() { return conversations.find(c => c.id === activeConvoId) || null; }
-function updateTopbarTitle() { const c = getActiveConvo(); document.getElementById('topbar-title').textContent = c ? c.title : 'New chat'; }
+function getActiveSession() { return sessions.find(s => s.id === activeSessionId) || null; }
 
-function renderConvoList() {
+function updateTopbar() {
+  const s = getActiveSession();
+  document.getElementById('topbar-title').textContent = s ? s.title : 'New session';
+  document.getElementById('extract-btn').disabled = !s || s.messages.length < 4;
+}
+
+function renderSessionList() {
   const list = document.getElementById('convo-list'), empty = document.getElementById('convo-empty');
   list.querySelectorAll('.convo-item').forEach(el => el.remove());
-  if (!conversations.length) { if (empty) empty.style.display = ''; return; }
+  if (!sessions.length) { if (empty) empty.style.display = ''; return; }
   if (empty) empty.style.display = 'none';
-  conversations.forEach(c => {
+  sessions.forEach(s => {
     const div = document.createElement('div');
-    div.className = 'convo-item' + (c.id === activeConvoId ? ' active' : '');
-    div.onclick = () => switchToConvo(c.id);
-    div.innerHTML = `<span class="convo-item-text">${escapeHtml(c.title)}</span><button class="delete-convo" onclick="deleteConversation('${c.id}', event)">${trashSvg}</button>`;
+    div.className = 'convo-item' + (s.id === activeSessionId ? ' active' : '');
+    div.onclick = () => switchToSession(s.id);
+    div.innerHTML = `
+      <div class="convo-item-icon chat">${chatSvg}</div>
+      <span class="convo-item-text">${escapeHtml(s.title)}</span>
+      <button class="delete-convo" onclick="deleteSession('${s.id}', event)">${trashSvg}</button>`;
     list.appendChild(div);
   });
 }
 
 function renderChat() {
   const area = document.getElementById('chat-area'); area.innerHTML = '';
-  const convo = getActiveConvo();
-  if (!convo || !convo.messages.length) {
-    area.innerHTML = `<div class="empty-state" id="empty-state"><div class="empty-logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="empty-title">What would you like to know?</div><div class="empty-sub">Drop in a document and ask away. Folio reads it so you don't have to.</div><div class="suggestion-label">Try asking</div><div class="suggestion-grid"><div class="suggestion" onclick="fillSuggestion(this)">What are the key terms?</div><div class="suggestion" onclick="fillSuggestion(this)">Summarize this document</div><div class="suggestion" onclick="fillSuggestion(this)">What are the termination clauses?</div><div class="suggestion" onclick="fillSuggestion(this)">List all obligations</div></div></div>`;
+  const s = getActiveSession();
+  if (!s || !s.messages.length) {
+    area.innerHTML = document.getElementById('empty-state') ? '' :
+      `<div class="empty-state" id="empty-state"><div class="empty-logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="empty-title">Capture a process</div><div class="empty-sub">Describe a procedure you do at work. ProcessKeeper will ask follow-up questions, then map it into a clear graph your team can keep.</div><div class="suggestion-label">Try starting with</div><div class="suggestion-grid"><div class="suggestion" onclick="fillSuggestion(this)">How I deploy to production</div><div class="suggestion" onclick="fillSuggestion(this)">Our incident response process</div><div class="suggestion" onclick="fillSuggestion(this)">How I onboard a new client</div><div class="suggestion" onclick="fillSuggestion(this)">Our monthly reporting workflow</div></div></div>`;
     return;
   }
-  convo.messages.forEach(m => addMessageToDOM(m.role, m.text));
+  s.messages.forEach(m => addMessageToDOM(m.role, m.text));
   area.scrollTop = area.scrollHeight;
 }
 
-function resetChatToEmpty() { activeConvoId = null; renderChat(); updateTopbarTitle(); }
+function resetChatToEmpty() { activeSessionId = null; renderChat(); updateTopbar(); }
 
 function addMessageToDOM(role, text, thinking = false) {
   const area = document.getElementById('chat-area');
   const id = 'msg-' + Date.now() + Math.random().toString(36).slice(2, 6);
   const div = document.createElement('div'); div.className = `message ${role}`; div.id = id;
+  const label = role === 'ai' ? 'PK' : 'You';
   const thinkingHtml = thinking
     ? `<div class="bubble ${role} thinking">${escapeHtml(text)}<span class="thinking-dots"><span></span><span></span><span></span></span></div>`
-    : `<div class="bubble ${role}">${escapeHtml(text)}</div>`;
-  div.innerHTML = `<div class="avatar ${role}">${role === 'ai' ? 'F' : 'U'}</div>${thinkingHtml}`;
+    : `<div class="bubble ${role}">${formatText(text)}</div>`;
+  div.innerHTML = `<div class="avatar ${role}">${label}</div>${thinkingHtml}`;
   area.appendChild(div); area.scrollTop = area.scrollHeight; return id;
 }
 
-async function sendQuery() {
-  const input = document.getElementById('query-input'), question = input.value.trim();
-  if (!question) return;
-  if (docCount === 0) return showToast('Upload a document first');
-  if (!activeConvoId) newConversation();
-  const convo = getActiveConvo();
+function formatText(text) {
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+
+async function sendMessage() {
+  const input = document.getElementById('query-input'), msg = input.value.trim();
+  if (!msg) return;
+  if (!activeSessionId) newSession();
+  const s = getActiveSession();
   document.getElementById('empty-state')?.remove();
-  convo.messages.push({ role: 'user', text: question });
-  if (convo.messages.length === 1) { convo.title = question.length > 40 ? question.slice(0, 40) + '...' : question; renderConvoList(); updateTopbarTitle(); }
-  saveConversations(); addMessageToDOM('user', question); input.value = ''; autoResize(input);
-  const thinkingId = addMessageToDOM('ai', 'Searching', true);
+  s.messages.push({ role: 'user', text: msg });
+  if (s.messages.length === 1) {
+    s.title = msg.length > 40 ? msg.slice(0, 40) + '...' : msg;
+    renderSessionList(); updateTopbar();
+  }
+  saveSessions(); addMessageToDOM('user', msg);
+  input.value = ''; autoResize(input);
+
+  const thinkingId = addMessageToDOM('ai', 'Thinking', true);
   document.getElementById('send-btn').disabled = true;
+
   try {
-    const res = await fetch(`${API}/query?question=${encodeURIComponent(question)}`, { method: 'POST' });
-    const data = await res.json(); document.getElementById(thinkingId)?.remove();
-    convo.messages.push({ role: 'ai', text: data.answer }); saveConversations(); addMessageToDOM('ai', data.answer);
+    const res = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: s.id, message: msg })
+    });
+    const data = await res.json();
+    document.getElementById(thinkingId)?.remove();
+    s.messages.push({ role: 'ai', text: data.reply });
+    saveSessions(); addMessageToDOM('ai', data.reply);
+    updateTopbar();
   } catch (e) {
     document.getElementById(thinkingId)?.remove();
-    const errMsg = 'Something went wrong. Please try again.';
-    convo.messages.push({ role: 'ai', text: errMsg }); saveConversations(); addMessageToDOM('ai', errMsg);
+    const errMsg = 'Connection error. Is the server running?';
+    s.messages.push({ role: 'ai', text: errMsg }); saveSessions(); addMessageToDOM('ai', errMsg);
   }
   document.getElementById('send-btn').disabled = false;
 }
 
-const uploadZone = document.getElementById('upload-zone'), docsFileInput = document.getElementById('docs-file-input');
-uploadZone.addEventListener('click', () => docsFileInput.click());
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('dragover'); [...e.dataTransfer.files].forEach(uploadFile); });
-docsFileInput.addEventListener('change', () => { [...docsFileInput.files].forEach(uploadFile); docsFileInput.value = ''; });
-
-async function uploadFile(file) {
-  if (!file.name.endsWith('.pdf')) return showToast('Only PDF files are supported');
-  showToast(`Uploading ${file.name}...`);
-  const form = new FormData(); form.append('file', file);
-  try { const res = await fetch(`${API}/upload`, { method: 'POST', body: form }); const data = await res.json(); showToast(`Indexed ${file.name} \u2014 ${data.chunks} chunks`); loadDocuments(); }
-  catch (e) { showToast('Upload failed. Is the server running?'); }
-}
-
-async function loadDocuments() {
-  try { const res = await fetch(`${API}/documents`); const data = await res.json(); const docs = data.documents || []; docCount = docs.length; updateDocCount(); renderDocTable(docs); } catch (e) {}
-}
-
-function renderDocTable(docs) {
-  const body = document.getElementById('doc-table-body'); body.innerHTML = '';
-  if (!docs.length) { body.innerHTML = '<div class="doc-table-empty">No documents uploaded yet</div>'; return; }
-  docs.forEach(doc => {
-    const size = doc.size < 1048576 ? Math.round(doc.size / 1024) + ' KB' : (doc.size / 1048576).toFixed(1) + ' MB';
-    const row = document.createElement('div'); row.className = 'doc-row';
-    row.innerHTML = `<div class="doc-row-name"><div class="doc-row-icon">${pdfIconSvg}</div><span title="${escapeHtml(doc.name)}">${escapeHtml(doc.name)}</span></div><div class="doc-row-size">${size}</div><div class="doc-row-actions"><button class="delete-doc-btn" onclick="deleteDocument('${escapeHtml(doc.name)}')" title="Delete">${trashSvg}</button></div>`;
-    body.appendChild(row);
+// ─── Graph Type ───
+function setGraphType(type) {
+  graphType = type;
+  document.querySelectorAll('.graph-type-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.type === type);
   });
 }
 
-async function deleteDocument(name) {
-  showToast(`Deleting ${name}...`);
-  try { await fetch(`${API}/documents/${encodeURIComponent(name)}`, { method: 'DELETE' }); showToast(`Deleted ${name}`); loadDocuments(); } catch (e) { showToast('Delete failed'); }
+// ─── Extract Graph ───
+async function extractGraph() {
+  const s = getActiveSession();
+  if (!s || s.messages.length < 4) return showToast('Have a longer conversation first');
+
+  const btn = document.getElementById('extract-btn');
+  btn.disabled = true; btn.textContent = 'Generating...';
+
+  try {
+    const res = await fetch(`${API}/extract`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: s.id, graph_type: graphType })
+    });
+    const data = await res.json();
+    if (data.nodes) {
+      currentGraphData = data;
+      renderGraph(data, 'graph-canvas');
+      openGraphPanel(data.title || 'Process Graph');
+    } else {
+      showToast('Failed to extract process');
+    }
+  } catch (e) {
+    showToast('Extraction failed. Is the server running?');
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Generate Graph`;
 }
 
-function updateDocCount() {
-  document.getElementById('docs-btn-count').textContent = docCount;
-  const dot = document.getElementById('status-dot'), text = document.getElementById('status-text');
-  if (docCount > 0) { dot.classList.add('active'); text.textContent = `${docCount} document${docCount !== 1 ? 's' : ''} indexed`; }
-  else { dot.classList.remove('active'); text.textContent = 'No documents indexed'; }
+function openGraphPanel(title) {
+  document.getElementById('graph-panel').classList.add('open');
+  document.getElementById('graph-panel-title').textContent = title;
 }
 
-function fillSuggestion(el) { document.getElementById('query-input').value = el.textContent.trim(); document.getElementById('query-input').focus(); showView('chat'); }
-function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendQuery(); } }
+function closeGraphPanel() {
+  document.getElementById('graph-panel').classList.remove('open');
+}
+
+// ─── Graph Rendering (SVG) ───
+function renderGraph(data, containerId) {
+  const container = document.getElementById(containerId);
+  if (data.graph_type === 'sequential' || data.graph_type === 'sequential') {
+    container.innerHTML = renderSequentialSVG(data);
+  } else {
+    container.innerHTML = renderFlowchartSVG(data);
+  }
+}
+
+function renderFlowchartSVG(data) {
+  const nodes = data.nodes || [];
+  const edges = data.edges || [];
+  if (!nodes.length) return '<p style="color:var(--text-muted)">No process data</p>';
+
+  // Layout: use a simple top-down layout with Sugiyama-like layer assignment
+  const nodeMap = {};
+  nodes.forEach(n => { nodeMap[n.id] = { ...n, children: [], parents: [], layer: 0, x: 0, y: 0 }; });
+  edges.forEach(e => {
+    if (nodeMap[e.from] && nodeMap[e.to]) {
+      nodeMap[e.from].children.push(e.to);
+      nodeMap[e.to].parents.push(e.from);
+    }
+  });
+
+  // BFS layer assignment
+  const roots = nodes.filter(n => nodeMap[n.id].parents.length === 0).map(n => n.id);
+  if (!roots.length) roots.push(nodes[0].id);
+  const visited = new Set();
+  const queue = roots.map(r => ({ id: r, layer: 0 }));
+  const layers = {};
+  while (queue.length) {
+    const { id, layer } = queue.shift();
+    if (visited.has(id)) continue;
+    visited.add(id);
+    nodeMap[id].layer = layer;
+    if (!layers[layer]) layers[layer] = [];
+    layers[layer].push(id);
+    nodeMap[id].children.forEach(c => queue.push({ id: c, layer: layer + 1 }));
+  }
+  // Add unvisited nodes
+  nodes.forEach(n => { if (!visited.has(n.id)) { const l = 0; nodeMap[n.id].layer = l; if (!layers[l]) layers[l] = []; layers[l].push(n.id); } });
+
+  const nodeW = 180, nodeH = 52, gapX = 40, gapY = 70;
+  const decisionW = 180, decisionH = 60;
+  const layerKeys = Object.keys(layers).map(Number).sort((a, b) => a - b);
+  const maxPerLayer = Math.max(...layerKeys.map(k => layers[k].length));
+  const totalW = Math.max(maxPerLayer * (nodeW + gapX), 400);
+
+  // Position nodes
+  layerKeys.forEach(l => {
+    const ids = layers[l];
+    const rowW = ids.length * (nodeW + gapX) - gapX;
+    const startX = (totalW - rowW) / 2;
+    ids.forEach((id, i) => {
+      nodeMap[id].x = startX + i * (nodeW + gapX);
+      nodeMap[id].y = l * (nodeH + gapY) + 40;
+    });
+  });
+
+  const totalH = (layerKeys.length) * (nodeH + gapY) + 80;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" style="font-family:'DM Sans',sans-serif;">`;
+  svg += `<defs><marker id="arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><polygon points="0 0, 10 3.5, 0 7" fill="#A1A1AA"/></marker></defs>`;
+
+  // Edges
+  edges.forEach(e => {
+    const from = nodeMap[e.from], to = nodeMap[e.to];
+    if (!from || !to) return;
+    const fx = from.x + nodeW / 2, fy = from.y + (from.type === 'decision' ? decisionH : nodeH);
+    const tx = to.x + nodeW / 2, ty = to.y;
+    const midY = (fy + ty) / 2;
+    svg += `<path d="M${fx},${fy} C${fx},${midY} ${tx},${midY} ${tx},${ty}" fill="none" stroke="#D4D4CF" stroke-width="1.5" marker-end="url(#arrow)"/>`;
+    if (e.label) {
+      const lx = (fx + tx) / 2, ly = midY - 6;
+      svg += `<text x="${lx}" y="${ly}" text-anchor="middle" font-size="11" font-weight="600" fill="${e.label === 'Yes' ? '#16A34A' : e.label === 'No' ? '#DC2626' : '#71717A'}">${escapeHtml(e.label)}</text>`;
+    }
+  });
+
+  // Nodes
+  nodes.forEach(n => {
+    const nd = nodeMap[n.id];
+    const x = nd.x, y = nd.y;
+    if (n.type === 'start') {
+      svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="26" fill="#16A34A" stroke="none"/>`;
+      svg += `<text x="${x + nodeW/2}" y="${y + nodeH/2 + 5}" text-anchor="middle" font-size="13" font-weight="600" fill="white">${escapeHtml(n.label)}</text>`;
+    } else if (n.type === 'end') {
+      svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="26" fill="#3F3F46" stroke="none"/>`;
+      svg += `<text x="${x + nodeW/2}" y="${y + nodeH/2 + 5}" text-anchor="middle" font-size="13" font-weight="600" fill="white">${escapeHtml(n.label)}</text>`;
+    } else if (n.type === 'decision') {
+      const cx = x + nodeW/2, cy = y + decisionH/2;
+      const dx = nodeW/2, dy = decisionH/2;
+      svg += `<polygon points="${cx},${y} ${x+nodeW},${cy} ${cx},${y+decisionH} ${x},${cy}" fill="#FFFBEB" stroke="#D97706" stroke-width="1.5"/>`;
+      svg += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="12" font-weight="600" fill="#92400E">${escapeHtml(n.label)}</text>`;
+    } else {
+      svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="10" fill="white" stroke="#E8E8E3" stroke-width="1.5"/>`;
+      svg += `<text x="${x + nodeW/2}" y="${y + nodeH/2 + 5}" text-anchor="middle" font-size="12" font-weight="500" fill="#1A1A1D">${escapeHtml(n.label)}</text>`;
+    }
+  });
+
+  svg += '</svg>';
+  return svg;
+}
+
+function renderSequentialSVG(data) {
+  const nodes = data.nodes || [];
+  if (!nodes.length) return '<p style="color:var(--text-muted)">No process data</p>';
+
+  const nodeW = 280, nodeH = 56, gapY = 24, padX = 40, padY = 40;
+  const totalW = nodeW + padX * 2;
+  const totalH = nodes.length * (nodeH + gapY) - gapY + padY * 2;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" style="font-family:'DM Sans',sans-serif;">`;
+  svg += `<defs><marker id="seq-arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse"><polygon points="0 0, 10 3.5, 0 7" fill="#A1A1AA"/></marker></defs>`;
+
+  const cx = totalW / 2;
+
+  nodes.forEach((n, i) => {
+    const y = padY + i * (nodeH + gapY);
+
+    // Connector line
+    if (i > 0) {
+      const prevY = padY + (i-1) * (nodeH + gapY) + nodeH;
+      svg += `<line x1="${cx}" y1="${prevY}" x2="${cx}" y2="${y}" stroke="#D4D4CF" stroke-width="1.5" marker-end="url(#seq-arrow)"/>`;
+    }
+
+    // Step number
+    const numX = padX - 6;
+    svg += `<circle cx="${numX}" cy="${y + nodeH/2}" r="12" fill="${i === 0 ? '#16A34A' : i === nodes.length-1 ? '#3F3F46' : '#F4F4F5'}" stroke="${i === 0 || i === nodes.length-1 ? 'none' : '#E8E8E3'}" stroke-width="1"/>`;
+    svg += `<text x="${numX}" y="${y + nodeH/2 + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="${i === 0 || i === nodes.length-1 ? 'white' : '#71717A'}">${i + 1}</text>`;
+
+    // Node
+    const nx = padX + 14;
+    const nw = nodeW - 14;
+    const fill = i === 0 ? '#F0FDF4' : i === nodes.length - 1 ? '#F4F4F5' : 'white';
+    const stroke = i === 0 ? '#BBF7D0' : i === nodes.length - 1 ? '#D4D4D8' : '#E8E8E3';
+    svg += `<rect x="${nx}" y="${y}" width="${nw}" height="${nodeH}" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+    svg += `<text x="${nx + nw/2}" y="${y + nodeH/2 + 5}" text-anchor="middle" font-size="13" font-weight="500" fill="#1A1A1D">${escapeHtml(n.label)}</text>`;
+
+    // Phase label
+    if (n.phase && (i === 0 || n.phase !== nodes[i-1]?.phase)) {
+      svg += `<text x="${totalW - padX + 8}" y="${y + nodeH/2 + 4}" text-anchor="start" font-size="10" font-weight="600" fill="#A1A1AA" letter-spacing="0.5">${escapeHtml(n.phase)}</text>`;
+    }
+  });
+
+  svg += '</svg>';
+  return svg;
+}
+
+// ─── Save / Library ───
+function openSaveModal() {
+  document.getElementById('save-modal').classList.add('show');
+  const s = getActiveSession();
+  document.getElementById('save-title').value = currentGraphData?.title || s?.title || '';
+  document.getElementById('save-title').focus();
+}
+function closeSaveModal() { document.getElementById('save-modal').classList.remove('show'); }
+
+async function saveProcess() {
+  const title = document.getElementById('save-title').value.trim();
+  if (!title) return showToast('Enter a name');
+  const s = getActiveSession();
+  if (!s) return;
+
+  try {
+    const res = await fetch(`${API}/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: s.id, title, graph_type: graphType })
+    });
+    const data = await res.json();
+    showToast(`Saved "${title}" to library`);
+    closeSaveModal();
+    loadLibraryCount();
+  } catch (e) { showToast('Save failed'); }
+}
+
+async function loadLibrary() {
+  try {
+    const res = await fetch(`${API}/processes`);
+    const data = await res.json();
+    const procs = data.processes || [];
+    processCount = procs.length;
+    document.getElementById('library-count').textContent = processCount;
+    renderLibrary(procs);
+  } catch (e) {
+    document.getElementById('library-grid').innerHTML = '<div class="library-empty">Could not load processes</div>';
+  }
+}
+
+async function loadLibraryCount() {
+  try {
+    const res = await fetch(`${API}/processes`);
+    const data = await res.json();
+    processCount = (data.processes || []).length;
+    document.getElementById('library-count').textContent = processCount;
+  } catch (e) {}
+}
+
+function renderLibrary(procs) {
+  const grid = document.getElementById('library-grid');
+  if (!procs.length) { grid.innerHTML = '<div class="library-empty" style="grid-column:1/-1">No saved processes yet. Capture a conversation and generate a graph to save it here.</div>'; return; }
+  grid.innerHTML = procs.map(p => {
+    const date = new Date(p.created * 1000).toLocaleDateString();
+    return `<div class="process-card" onclick="viewProcess('${p.id}')">
+      <div class="process-card-title">${escapeHtml(p.title)}</div>
+      <div class="process-card-meta">
+        <span class="process-card-badge ${p.graph_type}">${p.graph_type}</span>
+        <span>${p.node_count} steps</span>
+        <span>${date}</span>
+      </div>
+      <div class="process-card-actions">
+        <button class="icon-btn" onclick="event.stopPropagation(); deleteProcess('${p.id}')" title="Delete">${trashSvg}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function viewProcess(id) {
+  try {
+    const res = await fetch(`${API}/processes/${id}`);
+    const data = await res.json();
+    document.getElementById('detail-title').textContent = data.title;
+    renderGraph(data.graph, 'detail-graph');
+    showView('detail');
+    document.getElementById('topbar-title').textContent = data.title;
+  } catch (e) { showToast('Could not load process'); }
+}
+
+async function deleteProcess(id) {
+  try {
+    await fetch(`${API}/processes/${id}`, { method: 'DELETE' });
+    showToast('Deleted'); loadLibrary();
+  } catch (e) { showToast('Delete failed'); }
+}
+
+// ─── Download SVG ───
+function downloadSVG() {
+  const svg = document.getElementById('graph-canvas').querySelector('svg');
+  if (!svg) return;
+  const blob = new Blob([svg.outerHTML], { type: 'image/svg+xml' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'process-graph.svg'; a.click();
+}
+
+function downloadDetailSVG() {
+  const svg = document.getElementById('detail-graph').querySelector('svg');
+  if (!svg) return;
+  const blob = new Blob([svg.outerHTML], { type: 'image/svg+xml' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'process-graph.svg'; a.click();
+}
+
+// ─── Utils ───
+function fillSuggestion(el) { document.getElementById('query-input').value = el.textContent.trim(); document.getElementById('query-input').focus(); }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timeout); t._timeout = setTimeout(() => t.classList.remove('show'), 3000); }
 function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-renderConvoList();
-if (conversations.length > 0) { activeConvoId = conversations[0].id; renderChat(); updateTopbarTitle(); }
-loadDocuments();
+renderSessionList();
+if (sessions.length > 0) { activeSessionId = sessions[0].id; renderChat(); updateTopbar(); }
+loadLibraryCount();
 </script>
 </body>
 </html>
